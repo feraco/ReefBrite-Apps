@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Your App Name</title>
+    <script type="text/javascript">
+        function getMobileOperatingSystem() {
+            var userAgent = navigator.userAgent || navigator.vendor || window.opera;
+            
+            if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+                return "iOS";
+            }
+
+            if (/android/i.test(userAgent)) {
+                return "Android";
+            }
+
+            return "unknown";
+        }
+        
+        window.onload = function() {
+            var os = getMobileOperatingSystem();
+            if (os == "iOS") {
+                window.location.href = "https://link-to-app-store";
+            } else if (os == "Android") {
+                window.location.href = "https://link-to-google-play-store";
+            }
+        }
+    </script>
+</head>
+<body>
+    Redirecting...
+</body>
+</html>
