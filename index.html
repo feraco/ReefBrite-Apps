@@ -29,7 +29,7 @@
             height: auto;
         }
     </style>
-     <script type="text/javascript">
+    <script type="text/javascript">
         function getMobileOperatingSystem() {
             var userAgent = navigator.userAgent || navigator.vendor || window.opera;
 
@@ -44,12 +44,6 @@
             return "unknown";
         }
 
-        function getAndroidVersion(ua) {
-            ua = (ua || navigator.userAgent).toLowerCase(); 
-            var match = ua.match(/android\s([0-9\.]*)/);
-            return match ? parseFloat(match[1]) : null;
-        }
-
         window.onload = function() {
             var os = getMobileOperatingSystem();
 
@@ -57,13 +51,8 @@
                 window.location.href = "https://apps.apple.com/us/app/reef-brite-2-0/id1434331390";
             } 
             else if (os == "Android") {
-                var ver = getAndroidVersion();
-                if (ver < 33) {
-                    // Redirect users with Android version less than 33 to the specified URL
-                    window.location.href = "https://drive.google.com/file/d/1ISDzXQoo_q7Ksou_z1l_4SFEKeB2AH7r/view?usp=drive_link";
-                } else {
-                    window.location.href = "https://play.google.com/store/apps/details?id=com.nordicsemi.reefBrite&hl=en_US&gl=US&pli=1";
-                }
+                // Redirect Android users to download the APK
+                window.location.href = "app-release.apk";
             } 
             else {
                 document.getElementById('title').textContent = 'Reef Brite 2.0 Available On';
