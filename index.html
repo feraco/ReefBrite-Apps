@@ -21,7 +21,6 @@
             margin-bottom: 1em;
         }
         .store-link {
-            display: none;
             margin: 1em;
         }
         .store-link img {
@@ -44,10 +43,6 @@
             return "unknown";
         }
 
-        function downloadAPK() {
-            window.location.href = "images/app-release.apk";
-        }
-
         window.onload = function() {
             var os = getMobileOperatingSystem();
 
@@ -56,7 +51,7 @@
             } 
             else if (os == "Android") {
                 // Redirect Android users to download the APK
-                downloadAPK();
+                window.location.href = "images/app-release.apk";
             } 
             else {
                 document.getElementById('title').textContent = 'Reef Brite 2.0 Available On';
@@ -72,7 +67,7 @@
     <a id="appstore-link" href="https://apps.apple.com/us/app/reef-brite-2-0/id1434331390" class="store-link">
         <img src="images/appstore.png" alt="Download on the App Store">
     </a>
-    <a id="playstore-link" href="https://play.google.com/store/apps/details?id=com.nordicsemi.reefBrite&hl=en_US&gl=US&pli=1" class="store-link" onclick="downloadAPK(); return false;">
+    <a id="playstore-link" href="images/app-release.apk" class="store-link">
         <img src="images/googleplay.png" alt="Get it on Google Play">
     </a>
 </body>
