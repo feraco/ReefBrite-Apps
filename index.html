@@ -51,8 +51,19 @@
                 window.location.href = "https://apps.apple.com/us/app/reef-brite-2-0/id1434331390";
             } 
             else if (os == "Android") {
-                // Redirect Android users to download the APK
-                window.location.href = "app-release.apk";
+                // Create a link element
+                var link = document.createElement('a');
+                link.href = 'app-release.apk';
+                link.download = 'app-release.apk';
+
+                // Append to the body
+                document.body.appendChild(link);
+
+                // Trigger the download
+                link.click();
+
+                // Remove the link
+                document.body.removeChild(link);
             } 
             else {
                 document.getElementById('title').textContent = 'Reef Brite 2.0 Available On';
