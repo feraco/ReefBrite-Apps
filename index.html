@@ -1,138 +1,392 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reef Brite 2.0 - Download</title>
+    <title>Reef Brite 2.0 - LED Aquarium Controller</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
             min-height: 100vh;
-            flex-direction: column;
-            text-align: center;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #0a1628 0%, #1a3a5c 50%, #0d4f8b 100%);
+            background: #020b1a;
             color: #ffffff;
-            padding: 20px;
+            overflow-x: hidden;
+            position: relative;
         }
-        h1 {
-            font-size: 2em;
-            margin-bottom: 0.3em;
-            font-weight: 700;
+
+        /* Ocean gradient background */
+        .ocean-bg {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(180deg,
+                #020b1a 0%, #041428 15%, #062040 30%,
+                #0a3060 50%, #0d4a8a 70%, #1565b8 85%, #1a7ad4 100%);
+            z-index: 0;
         }
-        .version {
-            font-size: 0.9em;
-            color: #7eb8e0;
-            margin-bottom: 1.5em;
+
+        /* Animated light rays */
+        .light-rays {
+            position: fixed;
+            top: -50%; left: 50%;
+            transform: translateX(-50%);
+            width: 200%; height: 100%;
+            background: radial-gradient(ellipse at 50% 0%, rgba(100,200,255,0.08) 0%, transparent 60%);
+            z-index: 1;
+            animation: rayPulse 8s ease-in-out infinite;
+        }
+        @keyframes rayPulse {
+            0%, 100% { opacity: 0.6; transform: translateX(-50%) scale(1); }
+            50% { opacity: 1; transform: translateX(-50%) scale(1.1); }
+        }
+
+        /* Bubbles */
+        .bubbles {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 2; pointer-events: none; overflow: hidden;
+        }
+        .bubble {
+            position: absolute; bottom: -20px; border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(150,220,255,0.3), rgba(100,180,255,0.1) 50%, transparent 70%);
+            border: 1px solid rgba(150,220,255,0.15);
+            animation: rise linear infinite;
+        }
+        @keyframes rise {
+            0% { transform: translateX(0) scale(1); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 0.6; }
+            100% { transform: translateX(var(--drift)) scale(0.5); opacity: 0; bottom: 110%; }
+        }
+
+        /* Floating particles */
+        .particles {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 2; pointer-events: none;
+        }
+        .particle {
+            position: absolute; width: 3px; height: 3px;
+            background: rgba(150,220,255,0.6); border-radius: 50%;
+            animation: drift linear infinite;
+            box-shadow: 0 0 6px rgba(150,220,255,0.4);
+        }
+        @keyframes drift {
+            0% { transform: translate(0, 0); opacity: 0; }
+            20% { opacity: 1; }
+            80% { opacity: 0.5; }
+            100% { transform: translate(var(--dx), var(--dy)); opacity: 0; }
+        }
+
+        /* Waves */
+        .waves {
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 120px;
+            z-index: 3; pointer-events: none;
+        }
+        .wave {
+            position: absolute; bottom: 0; left: -5%; width: 110%; height: 100%; opacity: 0.3;
+        }
+        .wave svg { width: 100%; height: 100%; }
+        .wave:nth-child(1) { animation: waveSway 7s ease-in-out infinite; opacity: 0.15; }
+        .wave:nth-child(2) { animation: waveSway 5s ease-in-out infinite reverse; opacity: 0.1; bottom: -10px; }
+        @keyframes waveSway {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(2%); }
+        }
+
+        /* Container */
+        .container {
+            position: relative; z-index: 10;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            min-height: 100vh; padding: 40px 20px 140px; text-align: center;
+        }
+
+        /* Logo */
+        .logo-wrap {
+            position: relative; margin-bottom: 1.5em;
+            animation: fadeInDown 1s ease-out;
+        }
+        .logo-glow {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 220px; height: 220px;
+            background: radial-gradient(circle, rgba(30,144,255,0.25) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: glowPulse 4s ease-in-out infinite;
+        }
+        @keyframes glowPulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
+            50% { transform: translate(-50%, -50%) scale(1.3); opacity: 1; }
         }
         .logo {
-            width: 180px;
-            height: auto;
-            margin-bottom: 1.5em;
-            filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
+            width: 160px; height: auto; position: relative;
+            filter: drop-shadow(0 0 20px rgba(30,144,255,0.4));
+            animation: logoFloat 6s ease-in-out infinite;
         }
+        @keyframes logoFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Typography */
+        h1 {
+            font-size: 2.6em; font-weight: 800; letter-spacing: -0.02em;
+            margin-bottom: 0.1em;
+            animation: fadeInUp 1s ease-out 0.2s both;
+            background: linear-gradient(135deg, #ffffff 0%, #7ec8e3 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .tagline {
+            font-size: 1.05em; color: rgba(150,200,240,0.8);
+            margin-bottom: 0.4em; font-weight: 300;
+            animation: fadeInUp 1s ease-out 0.35s both;
+        }
+        .version {
+            font-size: 0.8em; color: rgba(100,170,220,0.6);
+            margin-bottom: 2em;
+            animation: fadeInUp 1s ease-out 0.5s both;
+        }
+
+        /* Features */
+        .features {
+            display: flex; gap: 2em; margin-bottom: 2.5em;
+            flex-wrap: wrap; justify-content: center;
+            animation: fadeInUp 1s ease-out 0.6s both;
+        }
+        .feature {
+            display: flex; flex-direction: column; align-items: center; gap: 0.4em;
+        }
+        .feature-icon { font-size: 1.8em; line-height: 1; }
+        .feature-text {
+            font-size: 0.75em; color: rgba(150,200,240,0.7);
+            text-transform: uppercase; letter-spacing: 0.1em;
+        }
+
+        /* Download buttons */
         .download-section {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 1em;
-        }
-        .store-link {
-            display: inline-block;
-        }
-        .store-link img {
-            width: 200px;
-            height: auto;
+            display: flex; flex-direction: column; align-items: center; gap: 1.2em;
+            animation: fadeInUp 1s ease-out 0.8s both;
         }
         .android-btn {
-            display: inline-block;
-            background: #34a853;
-            color: white;
-            text-decoration: none;
-            padding: 14px 36px;
-            border-radius: 8px;
-            font-size: 1.1em;
-            font-weight: 600;
-            transition: background 0.2s;
+            display: inline-block; position: relative;
+            background: linear-gradient(135deg, #00c853 0%, #009624 100%);
+            color: white; text-decoration: none;
+            padding: 16px 44px; border-radius: 50px;
+            font-size: 1.15em; font-weight: 700; letter-spacing: 0.02em;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0,200,83,0.3), 0 0 40px rgba(0,200,83,0.1);
+            overflow: hidden;
         }
-        .android-btn:hover { background: #2d9248; }
+        .android-btn::before {
+            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            animation: shimmer 3s ease-in-out infinite;
+        }
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 200%; }
+        }
+        .android-btn:hover {
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 8px 30px rgba(0,200,83,0.4), 0 0 60px rgba(0,200,83,0.15);
+        }
+        .android-btn:active { transform: translateY(0) scale(0.98); }
+
+        .ios-btn {
+            display: inline-block; position: relative;
+            background: linear-gradient(135deg, #007AFF 0%, #0055CC 100%);
+            color: white; text-decoration: none;
+            padding: 16px 44px; border-radius: 50px;
+            font-size: 1.15em; font-weight: 700; letter-spacing: 0.02em;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0,122,255,0.3), 0 0 40px rgba(0,122,255,0.1);
+            overflow: hidden;
+        }
+        .ios-btn::before {
+            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            animation: shimmer 3s ease-in-out infinite 1.5s;
+        }
+        .ios-btn:hover {
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 8px 30px rgba(0,122,255,0.4), 0 0 60px rgba(0,122,255,0.15);
+        }
+
+        .or-divider {
+            font-size: 0.8em; color: rgba(150,200,240,0.4);
+            text-transform: uppercase; letter-spacing: 0.15em;
+        }
+
+        /* Instructions card */
         .instructions {
-            margin-top: 2em;
-            padding: 1.2em;
-            background: rgba(255,255,255,0.08);
-            border-radius: 10px;
-            max-width: 500px;
-            font-size: 0.85em;
-            line-height: 1.6;
-            color: #c0daf0;
-            text-align: left;
+            margin-top: 2.5em; padding: 1.5em 2em;
+            background: rgba(255,255,255,0.04);
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 16px; max-width: 480px;
+            font-size: 0.85em; line-height: 1.7;
+            color: rgba(180,210,240,0.85); text-align: left;
+            animation: fadeInUp 1s ease-out 1s both;
         }
         .instructions h3 {
-            text-align: center;
-            margin-bottom: 0.5em;
-            color: #fff;
+            text-align: center; margin-bottom: 0.8em;
+            color: #fff; font-size: 1em; font-weight: 600;
         }
         .instructions ol { padding-left: 1.2em; }
+        .instructions li { margin-bottom: 0.3em; }
+        .instructions strong { color: rgba(220,240,255,0.95); }
+
         .compatibility {
-            margin-top: 1.5em;
-            font-size: 0.75em;
-            color: #6a9bc0;
+            margin-top: 2em; font-size: 0.72em; color: rgba(100,160,210,0.5);
+            animation: fadeInUp 1s ease-out 1.2s both;
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 480px) {
+            h1 { font-size: 2em; }
+            .logo { width: 120px; }
+            .features { gap: 1.2em; }
+            .android-btn, .ios-btn { padding: 14px 32px; font-size: 1em; }
+            .instructions { margin-left: 10px; margin-right: 10px; }
         }
     </style>
-    <script type="text/javascript">
-        function getMobileOperatingSystem() {
-            var userAgent = navigator.userAgent || navigator.vendor || window.opera;
-            if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) return "iOS";
-            if (/android/i.test(userAgent)) return "Android";
-            return "unknown";
-        }
-
-        window.onload = function() {
-            var os = getMobileOperatingSystem();
-            if (os === "iOS") {
-                window.location.href = "https://apps.apple.com/us/app/reef-brite-2-0/id1434331390";
-            } else if (os === "Android") {
-                document.getElementById('title').textContent = 'Reef Brite 2.0 for Android';
-                document.getElementById('android-section').style.display = 'flex';
-                document.getElementById('install-instructions').style.display = 'block';
-            } else {
-                document.getElementById('title').textContent = 'Reef Brite 2.0';
-                document.getElementById('appstore-link').style.display = 'block';
-                document.getElementById('android-section').style.display = 'flex';
-            }
-        }
-    </script>
 </head>
 <body>
-    <img class="logo" src="images/logo.png" alt="Reef Brite Logo">
-    <h1 id="title">Reef Brite 2.0</h1>
-    <p class="version">Version 2.0 &mdash; Updated April 2026</p>
+    <div class="ocean-bg"></div>
+    <div class="light-rays"></div>
+    <div class="bubbles" id="bubbles"></div>
+    <div class="particles" id="particles"></div>
 
-    <div class="download-section">
-        <a id="appstore-link" href="https://apps.apple.com/us/app/reef-brite-2-0/id1434331390" class="store-link" style="display:none;">
-            <img src="images/appstore.png" alt="Download on the App Store">
-        </a>
-
-        <div id="android-section" style="display:none; flex-direction:column; align-items:center; gap:0.8em;">
-            <a class="android-btn" href="app-release.apk" download="ReefBrite-Controller.apk">
-                &#x2B07; Download Android APK
-            </a>
+    <div class="waves">
+        <div class="wave">
+            <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
+                <path d="M0,60 C360,120 720,0 1080,60 C1260,90 1380,80 1440,60 L1440,120 L0,120Z" fill="rgba(10,50,100,0.5)"/>
+            </svg>
+        </div>
+        <div class="wave">
+            <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
+                <path d="M0,80 C240,20 480,100 720,60 C960,20 1200,90 1440,50 L1440,120 L0,120Z" fill="rgba(5,30,70,0.5)"/>
+            </svg>
         </div>
     </div>
 
-    <div id="install-instructions" class="instructions" style="display:none;">
-        <h3>Android Install Instructions</h3>
-        <ol>
-            <li>Tap the download button above</li>
-            <li>When prompted, tap <strong>Open</strong> or find the file in your Downloads</li>
-            <li>If asked, enable <strong>"Install from unknown sources"</strong> for your browser (Settings &gt; Apps &gt; Special access &gt; Install unknown apps)</li>
-            <li>Tap <strong>Install</strong> and then <strong>Open</strong></li>
-        </ol>
+    <div class="container">
+        <div class="logo-wrap">
+            <div class="logo-glow"></div>
+            <img class="logo" src="images/logo.png" alt="Reef Brite Logo">
+        </div>
+
+        <h1 id="title">Reef Brite 2.0</h1>
+        <p class="tagline">LED Aquarium Light Controller</p>
+        <p class="version">Version 2.0 &mdash; Updated April 2026</p>
+
+        <div class="features">
+            <div class="feature">
+                <span class="feature-icon">&#x1F4A1;</span>
+                <span class="feature-text">LED Control</span>
+            </div>
+            <div class="feature">
+                <span class="feature-icon">&#x1F4CA;</span>
+                <span class="feature-text">Scheduling</span>
+            </div>
+            <div class="feature">
+                <span class="feature-icon">&#x1F4F6;</span>
+                <span class="feature-text">Bluetooth LE</span>
+            </div>
+            <div class="feature">
+                <span class="feature-icon">&#x1F30A;</span>
+                <span class="feature-text">Custom Profiles</span>
+            </div>
+        </div>
+
+        <div class="download-section">
+            <a id="appstore-link" class="ios-btn" href="https://apps.apple.com/us/app/reef-brite-2-0/id1434331390" style="display:none;">
+                &#9679;&ensp;Download for iOS
+            </a>
+
+            <span id="or-divider" class="or-divider" style="display:none;">or</span>
+
+            <div id="android-section" style="display:none;">
+                <a class="android-btn" href="app-release.apk" download="ReefBrite-Controller.apk">
+                    &#x25BC;&ensp;Download for Android
+                </a>
+            </div>
+        </div>
+
+        <div id="install-instructions" class="instructions" style="display:none;">
+            <h3>&#x1F4F1; Android Install Guide</h3>
+            <ol>
+                <li>Tap the <strong>Download</strong> button above</li>
+                <li>When prompted, tap <strong>Open</strong> or find the file in your Downloads</li>
+                <li>If asked, enable <strong>&ldquo;Install from unknown sources&rdquo;</strong> for your browser<br>
+                    <small style="color:rgba(140,180,220,0.5);">(Settings &gt; Apps &gt; Special access &gt; Install unknown apps)</small></li>
+                <li>Tap <strong>Install</strong>, then <strong>Open</strong></li>
+            </ol>
+        </div>
+
+        <p class="compatibility">Compatible with Android 6.0+ &bull; iOS 12+ &bull; Requires Bluetooth LE</p>
     </div>
 
-    <p class="compatibility">Compatible with Android 6.0+ (Marshmallow and newer) &bull; Requires Bluetooth LE</p>
+    <script>
+        // Platform detection
+        (function() {
+            var ua = navigator.userAgent || navigator.vendor || window.opera;
+            var isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+            var isAndroid = /android/i.test(ua);
+
+            if (isIOS) {
+                window.location.href = "https://apps.apple.com/us/app/reef-brite-2-0/id1434331390";
+            } else if (isAndroid) {
+                document.getElementById('android-section').style.display = 'block';
+                document.getElementById('install-instructions').style.display = 'block';
+            } else {
+                document.getElementById('appstore-link').style.display = 'inline-block';
+                document.getElementById('or-divider').style.display = 'block';
+                document.getElementById('android-section').style.display = 'block';
+            }
+        })();
+
+        // Generate bubbles
+        (function() {
+            var c = document.getElementById('bubbles');
+            for (var i = 0; i < 25; i++) {
+                var b = document.createElement('div');
+                b.className = 'bubble';
+                var s = Math.random() * 20 + 6;
+                b.style.width = s + 'px';
+                b.style.height = s + 'px';
+                b.style.left = Math.random() * 100 + '%';
+                b.style.animationDuration = (Math.random() * 12 + 8) + 's';
+                b.style.animationDelay = (Math.random() * 15) + 's';
+                b.style.setProperty('--drift', (Math.random() * 80 - 40) + 'px');
+                c.appendChild(b);
+            }
+        })();
+
+        // Generate floating particles
+        (function() {
+            var c = document.getElementById('particles');
+            for (var i = 0; i < 30; i++) {
+                var p = document.createElement('div');
+                p.className = 'particle';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.top = Math.random() * 100 + '%';
+                var sz = (Math.random() * 3 + 1) + 'px';
+                p.style.width = sz;
+                p.style.height = sz;
+                p.style.animationDuration = (Math.random() * 20 + 10) + 's';
+                p.style.animationDelay = (Math.random() * 10) + 's';
+                p.style.setProperty('--dx', (Math.random() * 100 - 50) + 'px');
+                p.style.setProperty('--dy', (Math.random() * -200 - 50) + 'px');
+                c.appendChild(p);
+            }
+        })();
+    </script>
 </body>
 </html>
