@@ -1,74 +1,138 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Reef Brite</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reef Brite 2.0 - Download</title>
     <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             flex-direction: column;
             text-align: center;
-            font-size: 2em; /* increase base font size */
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0a1628 0%, #1a3a5c 50%, #0d4f8b 100%);
+            color: #ffffff;
+            padding: 20px;
         }
         h1 {
-            margin-bottom: 1em;
+            font-size: 2em;
+            margin-bottom: 0.3em;
+            font-weight: 700;
+        }
+        .version {
+            font-size: 0.9em;
+            color: #7eb8e0;
+            margin-bottom: 1.5em;
         }
         .logo {
-            width: 200px; /* adjust as needed */
+            width: 180px;
             height: auto;
-            margin-bottom: 1em;
+            margin-bottom: 1.5em;
+            filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
+        }
+        .download-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1em;
         }
         .store-link {
-            margin: 1em;
+            display: inline-block;
         }
         .store-link img {
-            width: 200px; /* increase as needed */
+            width: 200px;
             height: auto;
+        }
+        .android-btn {
+            display: inline-block;
+            background: #34a853;
+            color: white;
+            text-decoration: none;
+            padding: 14px 36px;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        .android-btn:hover { background: #2d9248; }
+        .instructions {
+            margin-top: 2em;
+            padding: 1.2em;
+            background: rgba(255,255,255,0.08);
+            border-radius: 10px;
+            max-width: 500px;
+            font-size: 0.85em;
+            line-height: 1.6;
+            color: #c0daf0;
+            text-align: left;
+        }
+        .instructions h3 {
+            text-align: center;
+            margin-bottom: 0.5em;
+            color: #fff;
+        }
+        .instructions ol { padding-left: 1.2em; }
+        .compatibility {
+            margin-top: 1.5em;
+            font-size: 0.75em;
+            color: #6a9bc0;
         }
     </style>
     <script type="text/javascript">
         function getMobileOperatingSystem() {
             var userAgent = navigator.userAgent || navigator.vendor || window.opera;
-
-            if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
-                return "iOS";
-            }
-
-            if (/android/i.test(userAgent)) {
-                return "Android";
-            }
-
+            if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) return "iOS";
+            if (/android/i.test(userAgent)) return "Android";
             return "unknown";
         }
 
         window.onload = function() {
             var os = getMobileOperatingSystem();
-
-            if (os == "iOS") {
+            if (os === "iOS") {
                 window.location.href = "https://apps.apple.com/us/app/reef-brite-2-0/id1434331390";
-            } 
-            else if (os == "Android") {
-                // Redirect Android users to download the APK from Google Drive
-                window.location.href = "https://drive.google.com/file/d/1cq-d6Ju6lmWnfeKEiqBB3F6gyH4OTubI/view?usp=sharing";
-            } 
-            else {
-                document.getElementById('title').textContent = 'Reef Brite 2.0 Available On';
+            } else if (os === "Android") {
+                document.getElementById('title').textContent = 'Reef Brite 2.0 for Android';
+                document.getElementById('android-section').style.display = 'flex';
+                document.getElementById('install-instructions').style.display = 'block';
+            } else {
+                document.getElementById('title').textContent = 'Reef Brite 2.0';
                 document.getElementById('appstore-link').style.display = 'block';
-                document.getElementById('playstore-link').style.display = 'block';
+                document.getElementById('android-section').style.display = 'flex';
             }
         }
     </script>
 </head>
 <body>
-    <h1 id="title">Redirecting...</h1>
     <img class="logo" src="images/logo.png" alt="Reef Brite Logo">
-    <a id="appstore-link" href="https://apps.apple.com/us/app/reef-brite-2-0/id1434331390" class="store-link">
-        <img src="images/appstore.png" alt="Download on the App Store">
-    </a>
-    <a id="playstore-link" href="https://drive.google.com/file/d/1cq-d6Ju6lmWnfeKEiqBB3F6gyH4OTubI/view?usp=sharing" class="store-link">
-        <img src="images/googleplay.png" alt="Get it on Google Play">
-    </a>
+    <h1 id="title">Reef Brite 2.0</h1>
+    <p class="version">Version 2.0 &mdash; Updated April 2026</p>
+
+    <div class="download-section">
+        <a id="appstore-link" href="https://apps.apple.com/us/app/reef-brite-2-0/id1434331390" class="store-link" style="display:none;">
+            <img src="images/appstore.png" alt="Download on the App Store">
+        </a>
+
+        <div id="android-section" style="display:none; flex-direction:column; align-items:center; gap:0.8em;">
+            <a class="android-btn" href="app-release.apk" download="ReefBrite-Controller.apk">
+                &#x2B07; Download Android APK
+            </a>
+        </div>
+    </div>
+
+    <div id="install-instructions" class="instructions" style="display:none;">
+        <h3>Android Install Instructions</h3>
+        <ol>
+            <li>Tap the download button above</li>
+            <li>When prompted, tap <strong>Open</strong> or find the file in your Downloads</li>
+            <li>If asked, enable <strong>"Install from unknown sources"</strong> for your browser (Settings &gt; Apps &gt; Special access &gt; Install unknown apps)</li>
+            <li>Tap <strong>Install</strong> and then <strong>Open</strong></li>
+        </ol>
+    </div>
+
+    <p class="compatibility">Compatible with Android 6.0+ (Marshmallow and newer) &bull; Requires Bluetooth LE</p>
 </body>
 </html>
